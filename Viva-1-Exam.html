@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VIVA 1 Exam</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #eef4ff, #f9fbff);
+      color: #1f2937;
+    }
+    .app {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+    .topbar {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      margin-bottom: 18px;
+      position: sticky;
+      top: 12px;
+      z-index: 5;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      color: #16325c;
+    }
+    .sub {
+      color: #5b6b82;
+      margin-bottom: 14px;
+    }
+    .meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    input[type="text"], textarea, input.answer {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #cbd8ea;
+      border-radius: 12px;
+      font-size: 16px;
+      background: #fff;
+    }
+    textarea { resize: vertical; min-height: 120px; }
+    .progress-wrap {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .progress-bar {
+      flex: 1;
+      height: 12px;
+      background: #dbe7f5;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #4f8cff, #7a5cff);
+      transition: width 0.25s ease;
+    }
+    .progress-text {
+      min-width: 100px;
+      text-align: right;
+      font-weight: 700;
+      color: #27446f;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 22px;
+      padding: 26px;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+      min-height: 430px;
+      display: none;
+    }
+    .card.active { display: block; }
+    .tag {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: #eaf2ff;
+      color: #1d4c8f;
+      font-weight: 700;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+    h2 {
+      margin: 0 0 10px;
+      color: #16325c;
+      font-size: 24px;
+    }
+    p.lead {
+      margin-top: 0;
+      color: #5b6b82;
+    }
+    .question {
+      margin: 18px 0 8px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .options {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .option {
+      border: 1.5px solid #d3e0f0;
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: #fbfdff;
+      cursor: pointer;
+      transition: 0.18s ease;
+    }
+    .option:hover {
+      transform: translateY(-1px);
+      border-color: #97baf0;
+    }
+    .option input { margin-right: 8px; }
+    .btn-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 18px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .secondary {
+      background: #eaf1fb;
+      color: #28466f;
+    }
+    .primary {
+      background: #4f8cff;
+      color: white;
+    }
+    .success {
+      background: #16a34a;
+      color: white;
+    }
+    .ghost {
+      background: transparent;
+      color: #33547f;
+      border: 1.5px solid #bfd0e8;
+    }
+    .small {
+      font-size: 14px;
+      color: #607089;
+      margin-top: 8px;
+    }
+    .reading-box, .picture-box {
+      border: 1.5px solid #dbe4f2;
+      border-radius: 16px;
+      padding: 16px;
+      background: #f9fbff;
+      margin: 14px 0;
+    }
+    .picture-box {
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #5d7090;
+      border-style: dashed;
+    }
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .score-box {
+      background: #f7faff;
+      border: 1px solid #dbe5f2;
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .score-box strong {
+      display: block;
+      font-size: 26px;
+      color: #16325c;
+      margin-top: 6px;
+    }
+    .page-jump {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .jump-btn {
+      min-width: 42px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #eef4ff;
+      color: #24456f;
+      border: 0;
+      font-weight: 700;
+    }
+    .jump-btn.done { background: #dff5e7; color: #166534; }
+    .jump-btn.current { background: #4f8cff; color: white; }
+    .hidden-teacher {
+      display: none;
+    }
+    @media (max-width: 680px) {
+      .meta { grid-template-columns: 1fr; }
+      .card { padding: 18px; }
+      h1 { font-size: 24px; }
+      h2 { font-size: 21px; }
+    }
+    @media print {
+      .topbar, .btn-row, .hidden-teacher { display: none !important; }
+      .card { display: block !important; margin-bottom: 20px; min-height: auto; box-shadow: none; border: 1px solid #ccc; }
+      body { background: white; }
+      .app { max-width: 100%; padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <h1>VIVA 1</h1>
+      <div class="sub">Get Ready</div>
+
+      <div class="meta">
+        <input type="text" id="studentName" placeholder="Student name">
+        <input type="text" id="examDate" placeholder="Date">
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-text" id="progressText">1 / 15</div>
+      </div>
+
+      <div class="page-jump" id="pageJump"></div>
+    </div>
+
+    <section class="card active">
+      <div class="tag">Page 1</div>
+      <h2>Welcome</h2>
+      <p class="lead">This version includes all the main questions from the exam. Students cannot check answers while doing the test. The automatic result appears only on the final page, while open tasks can still be marked by the teacher.</p>
+      <div class="reading-box">
+        <strong>Instructions</strong>
+        <ul>
+          <li>Complete each page and move to the next one.</li>
+          <li>There is one exercise per page.</li>
+          <li>Some parts are scored automatically in the final results page.</li>
+          <li>Open writing and speaking tasks still need teacher marking.</li>
+        </ul>
+      </div>
+      <div class="btn-row">
+        <span></span>
+        <button class="primary next-btn">Start</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="tag">Page 2</div>
+      <h2>Vocabulary – Translate into English</h2>
+      <p class="lead">Write the meaning in English.</p>
+
+      <div class="question">1. Vivo en una ciudad muy pequeña pero interesante.</div>
+      <input class="answer" data-type="auto" data-answer="i live in a quite small but very interesting city">
+
+      <div class="question">2. Los fines de semana siempre salgo con mis amigos al museo.</div>
+      <input class="answer" data-type="auto" data-answer="at the weekend i always go out to the museum with my friends">
+
+      <div class="question">3. Me gusta mucho escuchar música porque es relajante.</div>
+      <input class="answer" data-type="auto" data-answer="i really like listening to music because it is relaxing">
+
+      <div class="question">4. A veces hago los deberes en la biblioteca con mi hermano.</div>
+      <input class="answer" data-type="auto" data-answer="sometimes i do my homework in the library with my brother">
+
+      <div class="question">5. Mi instituto es moderno y tiene muchas clases.</div>
+      <input class="answer" data-type="auto" data-answer="my school is modern and has many classes">
+
+      <div class="btn-row">
+        <button class="secondary prev-btn">Previous</button>
+        <button class="primary next-btn">Next</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="tag">Page 3</div>
+      <h2>Vocabulary – Translate into Spanish</h2>
+      <p class="lead">Write the sentences in Spanish.</p>
+
+      <div class="question">1. I usually go to the park with my friends.</div>
+      <input class="answer" data-type="auto" data-answer="normalmente voy al parque con mis amigos">
+
+      <div class="question">2. My sister is very funny but sometimes she is silly.</div>
+      <input class="answer" data-type="auto" data-answer="mi hermana es muy divertida pero a veces es tonta">
+
+      <div class="question">3. We eat with my family because it is important.</div>
+      <input class="answer" data-type="auto" data-answer="comemos con mi familia porque es importante">
+
+      <div class="question">4. At the weekend, I like watching TV and sleeping.</div>
+      <input class="answer" data-type="auto" data-answer="los fines de semana me gusta ver la tele y dormir">
+
+      <div class="question">5. I don’t like doing homework because it is very boring and difficult.</div>
+      <input class="answer" data-type="auto" data-answer="no me gusta hacer los deberes porque son muy aburridos y dificiles">
+
+      <div class="btn-row">
+        <button class="secondary prev-btn">Previous</button>
+        <button class="primary next-btn">Next</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="tag">Page 4</div>
+      <h2>Grammar – Verb Conjugation</h2>
+      <p class="lead">Write the correct form of the verb.</p>
+
+      <div class="question">1. Yo _____ (ir) al cine con mis amigos los sábados.</div>
+      <input class="answer" data-type="auto" data-answer="voy">
+
+      <div class="question">2. Tú _____ (tener) muchos deberes esta semana.</div>
+      <input class="answer" data-type="auto" data-answer="tienes">
+
+      <div class="question">3. Él _____ (hacer) deporte después de clase.</div>
+      <input class="answer" data-type="auto" data-answer="hace">
+
+      <div class="question">4. Nosotros _____ (comer) en casa porque es más barato.</div>
+      <input class="answer" data-type="auto" data-answer="comemos">
+
+      <div class="question">5. Ellos _____ (vivir) en una ciudad grande.</div>
+      <input class="answer" data-type="auto" data-answer="viven">
+
+      <div class="question">6. Yo _____ (ser) bastante activo y me gusta salir.</div>
+      <input class="answer" data-type="auto" data-answer="soy">
+
+      <div class="question">7. Tú _____ (jugar) al fútbol con tu equipo.</div>
+      <input class="answer" data-type="auto" data-answer="juegas">
+
+      <div class="question">8. Ella _____ (leer) libros interesantes en su tiempo libre.</div>
+      <input class="answer" data-type="auto" data-answer="lee">
+
+      <div class="question">9. Nosotros _____ (beber) agua durante la clase.</div>
+      <input class="answer" data-type="auto" data-answer="bebemos">
+
+      <div class="question">10. Ellos _____ (estudiar) para los exámenes.</div>
+      <input class="answer" data-type="auto" data-answer="estudian">
+
+      <div class="btn-row">
+        <button class="secondary prev-btn">Previous</button>
+        <button class="primary next-btn">Next</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="tag">Page 5</div>
+      <h2>Grammar – Correct the Sentences</h2>
+      <p class="lead">Rewrite each sentence correctly.</p>
+
+      <div class="question">1. Yo ir al parque con mis amigos los fines de semana.</div>
+      <input class="answer" data-type="auto" data-answer="yo voy al parque con mis amigos los fines de semana">
+
+      <div class="question">2. Ella no gusta hacer los deberes porque es aburrido.</div>
+      <input class="answer" data-type="auto" data-answer="a ella no le gusta hacer los deberes porque es aburrido">
+
+      <div class="question">3. Nosotros juega al fútbol después de clase.</div>
+      <input class="answer" data-type="auto" data-answer="nosotros jugamos al futbol despues de clase">
+
+      <div class="question">4. Tú tiene un perro muy grande y divertido.</div>
+      <input class="answer" data-type="auto" data-answer="tu tienes un perro muy grande y divertido">
+
+      <div class="question">5. Ellos es muy simpático y generosos.</div>
+      <input class="answer" data-type="auto" data-answer="ellos son muy simpaticos y generosos">
+
+      <div class="btn-row">
+        <button class="secondary prev-btn">Previous</button>
+        <button class="primary next-btn">Next</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="tag">Page 6</div>
+      <h2>Sentence Building – Unscramble</h2>
+      <p class="lead">Write the sentences in the correct order.</p>
+
+      <div class="question">1. gusta / me / con / salir / amigos / mis / los / fines / semana / de</div>
+      <input class="answer" data-type="auto" data-answer="me gusta salir con mis amigos los fines de semana">
+
+      <div class="question">2. voy / normalmente / al / luego / instituto / gimnasio / al</div>
+      <input class="answer" data-type="auto" data-answer="normalmente voy al instituto luego al gimnasio">
+
+      <div class="question">3. interesante / mi / de / es / profesor / ciencias / muy</div>
+      <input class="answer" data-type="auto" data-answer="mi profesor de ciencias es muy interesante">
+
+      <div class="question">4. no / me / gusta / hacer / los / deberes / porque / son / difíciles</div>
+      <input class="answer" data-type="auto" data-answer="no me gusta hacer los deberes porque son dificiles">
+
+      <div class="question">5. en / el / como / restaurante / familia / con / mi / a / veces</div>
+      <input class="answer" data-type="auto" data-answer="a veces como en el restaurante con mi familia">
+
+      <div class="btn-row">
+        <button class="secondary prev-btn">Previous</button>
+        <button class="primary next-btn">Next</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="tag">Page 7</div>
+      <h2>Sentence Building – Create Sentences</h2>
+      <p class="lead">Build full sentences from the prompts.</p>
+
+      <div class="question">1. (yo / ir / cine / amigos / fines de semana)</div>
+      <textarea data-manual="1"></textarea>
+
+      <div class="question">2. (mi padre / jugar / tenis / fútbol)</div>
+      <textarea data-manual="1"></textarea>
+
+      <div class="question">3. (nosotros / comer / restaurante / porque / comida / deliciosa)</div>
+      <textarea data-manual="1"></textarea>
+
+      <div class="question">4. (ella / no / gustar / hacer / deporte / porque / aburrido)</div>
+      <textarea data-manual="1"></textarea>
+
+      <div class="question">5. (ellos / jugar / fútbol / parque)</div>
+      <textarea data-manual="1"></textarea>
+
+      <div class="small">Teacher-marked page.</div>
+
+      <div class="btn-row">
+        <button class="secondary prev-btn">Previous</button>
+        <button class="primary next-btn">Next</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="tag">Page 8</div>
+      <h2>Reading</h2>
+      <div class="reading-box">
+        <p><strong>Hola, me llamo Daniel y tengo 14 años.</strong> Vivo en una ciudad bastante grande en España con mi familia. Vivo con mis padres y mi hermana. Mi casa está en la ciudad, y hay muchas tiendas, restaurantes y parques. Puedo salir con mis amigos.</p>
+        <p>Durante la semana, voy al instituto y estudio muchas asignaturas como matemáticas, historia e inglés. Algunas asignaturas son interesantes, pero otras son bastante difíciles. A veces tengo muchos deberes. Normalmente, hago mis deberes por la tarde, pero a veces prefiero ver la televisión o jugar videojuegos.</p>
+        <p>En mi tiempo libre, me gusta mucho practicar deporte. Juego al fútbol dos veces por semana y también voy al gimnasio con mis amigos. Además, me encanta escuchar música.</p>
+        <p>Los fines de semana salgo con mis amigos al cine o al centro comercial. A veces comemos en un restaurante porque nos gusta comer comida diferente. También me gusta quedarme en casa con mi familia, ver películas y dormir.</p>
+      </div>
+      <div class="btn-row">
+        <button class="secondary prev-btn">Previous</button>
+        <button class="primary next-btn">Go to questions</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="tag">Page 9</div>
+      <h2>Reading Questions</h2>
+
+      <div class="question">1. Where does Daniel live and who does he live with?</div>
+      <textarea data-manual="1"></textarea>
+
+      <div class="question">2. What is there in his city?</div>
+      <textarea data-manual="1"></textarea>
+
+      <div class="question">3. What does he do during the week?</div>
+      <textarea data-manual="1"></textarea>
+
+      <div class="question">4. What does he like doing in his free time?</div>
+      <textarea data-manual="1"></textarea>
+
+      <div class="question">5. What does he do at the weekend?</div>
+      <textarea data-manual="1"></textarea>
+
+      <div class="small">Teacher-marked page.</div>
+
+      <div class="btn-row">
+        <button class="secondary prev-btn">Previous</button>
+        <button class="primary next-btn">Next</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="tag">Page 10</div>
+      <h2>Writing</h2>
+      <p class="lead">Write a paragraph about your life, routine, and free time.</p>
+
+      <div class="reading-box">
+        Include:
+        <ul>
+          <li>Where you live and who you live with</li>
+          <li>What you do during the week</li>
+          <li>What you like and don’t like, with reasons</li>
+          <li>What you do in your free time and at the weekend</li>
+        </ul>
+      </div>
+
+      <textarea style="min-height: 280px;" data-manual="1" placeholder="Write about 100 words..."></textarea>
+
+      <div class="small">Teacher-marked page.</div>
+
+      <div class="btn-row">
+        <button class="secondary prev-btn">Previous</button>
+        <button class="primary next-btn">Next</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="tag">Page 11</div>
+      <h2>Picture Description</h2>
+      <div class="picture-box">
+        Insert your picture here later<br>
+        (You can replace this box with a real image)
+      </div>
+
+      <p class="lead">Write 5–6 sentences in Spanish describing the people.</p>
+      <textarea style="min-height: 240px;" data-manual="1" placeholder="Describe physical appearance, clothes, and actions..."></textarea>
+
+      <div class="small">Teacher-marked page.</div>
+
+      <div class="btn-row">
+        <button class="secondary prev-btn">Previous</button>
+        <button class="primary next-btn">Next</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="tag">Page 12</div>
+      <h2>Listening – Multiple Choice</h2>
+      <p class="lead">Listen and choose the correct answer.</p>
+
+      <div class="question">1. Laura lives in:</div>
+      <div class="options" data-type="mcq" data-answer="a big city">
+        <label class="option"><input type="radio" name="q1" value="a small town">a small town</label>
+        <label class="option"><input type="radio" name="q1" value="a big city">a big city</label>
+        <label class="option"><input type="radio" name="q1" value="a village">a village</label>
+      </div>
+
+      <div class="question">2. She has:</div>
+      <div class="options" data-type="mcq" data-answer="one brother and one sister">
+        <label class="option"><input type="radio" name="q2" value="one brother">one brother</label>
+        <label class="option"><input type="radio" name="q2" value="two sisters">two sisters</label>
+        <label class="option"><input type="radio" name="q2" value="one brother and one sister">one brother and one sister</label>
+      </div>
+
+      <div class="question">3. She likes:</div>
+      <div class="options" data-type="mcq" data-answer="english">
+        <label class="option"><input type="radio" name="q3" value="maths">maths</label>
+        <label class="option"><input type="radio" name="q3" value="english">English</label>
+        <label class="option"><input type="radio" name="q3" value="science">science</label>
+      </div>
+
+      <div class="question">4. After school she:</div>
+      <div class="options" data-type="mcq" data-answer="does homework">
+        <label class="option"><input type="radio" name="q4" value="plays football">plays football</label>
+        <label class="option"><input type="radio" name="q4" value="does homework">does homework</label>
+        <label class="option"><input type="radio" name="q4" value="sleeps">sleeps</label>
+      </div>
+
+      <div class="question">5. At the weekend she:</div>
+      <div class="options" data-type="mcq" data-answer="goes out with friends">
+        <label class="option"><input type="radio" name="q5" value="studies">studies</label>
+        <label class="option"><input type="radio" name="q5" value="goes out with friends">goes out with friends</label>
+        <label class="option"><input type="radio" name="q5" value="stays at school">stays at school</label>
+      </div>
+
+      <div class="btn-row">
+        <button class="secondary prev-btn">Previous</button>
+        <button class="primary next-btn">Next</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="tag">Page 13</div>
+      <h2>Listening – Open Questions</h2>
+
+      <div class="question">1. Why does she like English?</div>
+      <textarea data-manual="1"></textarea>
+
+      <div class="question">2. Why doesn’t she like maths?</div>
+      <textarea data-manual="1"></textarea>
+
+      <div class="question">3. What does she do after homework?</div>
+      <textarea data-manual="1"></textarea>
+
+      <div class="question">4. Where does she go at the weekend?</div>
+      <textarea data-manual="1"></textarea>
+
+      <div class="question">5. Why does she go to restaurants?</div>
+      <textarea data-manual="1"></textarea>
+
+      <div class="small">Teacher-marked page.</div>
+
+      <div class="btn-row">
+        <button class="secondary prev-btn">Previous</button>
+        <button class="primary next-btn">Next</button>
+      </div>
+    </section>
+
+    <section class="card hidden-teacher">
+      <div class="tag">Teacher only</div>
+      <h2>Listening Script</h2>
+      <div class="reading-box">
+        <p>Hola, me llamo Laura y tengo trece años. Vivo en una ciudad grande con mi familia. Tengo un hermano y una hermana. Voy al instituto de lunes a viernes. Mi asignatura favorita es inglés porque es interesante y divertida, pero no me gustan las matemáticas porque son difíciles.</p>
+        <p>Después de clase, hago mis deberes y luego escucho música o veo la televisión. Los fines de semana salgo con mis amigos al centro comercial. A veces vamos a un restaurante porque nos gusta comer pizza y comida diferente.</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="tag">Page 14</div>
+      <h2>Speaking</h2>
+      <p class="lead">Choose one or more topics and answer orally.</p>
+
+      <div class="reading-box">
+        <strong>Topic 1: Personal Information and Family</strong>
+        <ol>
+          <li>¿Cómo te llamas y cuántos años tienes?</li>
+          <li>¿Con quién vives y cómo es tu familia?</li>
+          <li>Describe a una persona de tu familia (físico o personalidad).</li>
+        </ol>
+      </div>
+
+      <div class="reading-box">
+        <strong>Topic 2: School</strong>
+        <ol>
+          <li>¿Qué asignaturas estudias y cuál te gusta más?</li>
+          <li>¿Cómo es tu instituto? (grande, pequeño, moderno…)</li>
+          <li>¿Qué haces normalmente en el colegio?</li>
+        </ol>
+      </div>
+
+      <div class="reading-box">
+        <strong>Topic 3: Free Time</strong>
+        <ol>
+          <li>¿Qué te gusta hacer en tu tiempo libre?</li>
+          <li>¿Qué no te gusta hacer y por qué?</li>
+          <li>¿Con quién haces estas actividades?</li>
+        </ol>
+      </div>
+
+      <div class="reading-box">
+        <strong>Topic 4: Routine and Weekend</strong>
+        <ol>
+          <li>¿Qué haces los fines de semana?</li>
+          <li>¿Adónde vas normalmente?</li>
+          <li>¿Qué haces después del colegio?</li>
+        </ol>
+      </div>
+
+      <div class="reading-box">
+        <strong>Topic 5: Town / City</strong>
+        <ol>
+          <li>¿Cómo es tu ciudad o tu barrio?</li>
+          <li>¿Qué hay en tu ciudad? (parques, tiendas, restaurantes…)</li>
+          <li>¿Qué haces cuando sales con tus amigos?</li>
+        </ol>
+      </div>
+
+      <div class="small">Teacher-marked page.</div>
+
+      <div class="btn-row">
+        <button class="secondary prev-btn">Previous</button>
+        <button class="primary next-btn">Next</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="tag">Page 15</div>
+      <h2>Results</h2>
+      <p class="lead">This automatic result is visible only at the end. Students cannot check answers during the exam.</p>
+
+      <div class="score-grid">
+        <div class="score-box">
+          Auto-checked score
+          <strong id="autoScore">0</strong>
+        </div>
+        <div class="score-box">
+          Auto-checked total
+          <strong id="autoTotal">0</strong>
+        </div>
+        <div class="score-box">
+          Completion
+          <strong id="completionText">0%</strong>
+        </div>
+      </div>
+
+      <div class="reading-box">
+        <strong>Teacher-marked pages:</strong> sentence building, reading answers, writing, picture description, listening open questions, and speaking.
+      </div>
+
+      <div class="btn-row">
+        <button class="secondary prev-btn">Previous</button>
+        <button class="success" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const allCards = Array.from(document.querySelectorAll('.card'));
+    const cards = allCards.filter(card => !card.classList.contains('hidden-teacher'));
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    const pageJump = document.getElementById('pageJump');
+    let current = 0;
+
+    function normalize(text) {
+      return (text || "")
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^\w\s]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function showPage(index) {
+      current = Math.max(0, Math.min(index, cards.length - 1));
+      allCards.forEach(card => card.classList.remove('active'));
+      cards[current].classList.add('active');
+
+      const pct = ((current + 1) / cards.length) * 100;
+      progressFill.style.width = pct + '%';
+      progressText.textContent = `${current + 1} / ${cards.length}`;
+      renderJumpButtons();
+      if (current === cards.length - 1) calculateResults();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      updateCompletion();
+    }
+
+    function renderJumpButtons() {
+      pageJump.innerHTML = '';
+      cards.forEach((_, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'jump-btn';
+        if (i === current) btn.classList.add('current');
+        if (isPageDone(i)) btn.classList.add('done');
+        btn.textContent = i + 1;
+        btn.addEventListener('click', () => showPage(i));
+        pageJump.appendChild(btn);
+      });
+    }
+
+    function isPageDone(index) {
+      const card = cards[index];
+      const fields = card.querySelectorAll('input.answer, textarea, .options, input[type="text"]');
+      if (fields.length === 0) return true;
+      let complete = true;
+      fields.forEach(el => {
+        if (el.classList && el.classList.contains('options')) {
+          const picked = el.querySelector('input[type="radio"]:checked');
+          if (!picked) complete = false;
+        } else if ((el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') && !el.value.trim()) {
+          complete = false;
+        }
+      });
+      return complete;
+    }
+
+    function calculateResults() {
+      let score = 0;
+      let total = 0;
+
+      document.querySelectorAll('input.answer[data-type="auto"]').forEach(inp => {
+        total++;
+        if (normalize(inp.value) === normalize(inp.dataset.answer)) score++;
+      });
+
+      document.querySelectorAll('.options[data-type="mcq"]').forEach(group => {
+        total++;
+        const selected = group.querySelector('input[type="radio"]:checked');
+        if (selected && normalize(selected.value) === normalize(group.dataset.answer)) score++;
+      });
+
+      document.getElementById('autoScore').textContent = score;
+      document.getElementById('autoTotal').textContent = total;
+    }
+
+    function updateCompletion() {
+      const done = cards.filter((_, i) => isPageDone(i)).length;
+      const pct = Math.round((done / cards.length) * 100);
+      document.getElementById('completionText').textContent = pct + '%';
+    }
+
+    document.querySelectorAll('.next-btn').forEach(btn => {
+      btn.addEventListener('click', () => showPage(current + 1));
+    });
+
+    document.querySelectorAll('.prev-btn').forEach(btn => {
+      btn.addEventListener('click', () => showPage(current - 1));
+    });
+
+    document.querySelectorAll('input, textarea').forEach(el => {
+      el.addEventListener('input', updateCompletion);
+      el.addEventListener('change', updateCompletion);
+    });
+
+    renderJumpButtons();
+    updateCompletion();
+  </script>
+</body>
+</html>
