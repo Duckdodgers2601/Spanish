@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spanish Verb Conjugation Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      margin: 0;
+      padding: 0;
+      color: #1f2937;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      padding: 30px;
+    }
+
+    h1, h2 {
+      text-align: center;
+      margin-top: 0;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #6b7280;
+      margin-bottom: 25px;
+      line-height: 1.6;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .question-box {
+      background: #eef4ff;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    button.option-btn, .main-btn, .restart-btn {
+      border: none;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button.option-btn {
+      background: #dbeafe;
+      color: #1e3a8a;
+      font-weight: bold;
+    }
+
+    button.option-btn:hover {
+      background: #bfdbfe;
+      transform: translateY(-1px);
+    }
+
+    .main-btn {
+      background: #2563eb;
+      color: white;
+      font-weight: bold;
+      display: inline-block;
+      margin: 10px 6px;
+    }
+
+    .main-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .restart-btn {
+      background: #ef4444;
+      color: white;
+      font-weight: bold;
+      padding: 10px 14px;
+    }
+
+    .restart-btn:hover {
+      background: #dc2626;
+    }
+
+    .controls {
+      text-align: center;
+      margin-top: 25px;
+    }
+
+    .feedback {
+      margin-top: 18px;
+      text-align: center;
+      font-weight: bold;
+      min-height: 28px;
+      font-size: 1.05rem;
+    }
+
+    .correct {
+      color: #15803d;
+    }
+
+    .wrong {
+      color: #b91c1c;
+    }
+
+    .progress {
+      text-align: center;
+      color: #4b5563;
+      margin-bottom: 18px;
+      font-weight: bold;
+      flex: 1;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    input[type="text"] {
+      padding: 12px 14px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 2px solid #cbd5e1;
+      width: 240px;
+      text-align: center;
+    }
+
+    .score-box {
+      text-align: center;
+      background: #eff6ff;
+      padding: 22px;
+      border-radius: 16px;
+      margin-top: 20px;
+    }
+
+    .small-note {
+      text-align: center;
+      color: #6b7280;
+      font-size: 0.95rem;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 700px) {
+      .options {
+        grid-template-columns: 1fr;
+      }
+
+      .container {
+        margin: 12px;
+        padding: 20px;
+      }
+
+      .question-box {
+        font-size: 1.15rem;
+      }
+
+      .top-bar {
+        flex-direction: column;
+      }
+
+      .progress {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="startScreen" class="screen active">
+      <h1>Spanish Verb Conjugation Game</h1>
+      <p class="subtitle">
+        Part 1: Choose the correct conjugation from 4 options.<br>
+        Part 2: Type the correct conjugation.<br>
+        There are 20 exercises in each part.<br>
+        The order changes every time you play.
+      </p>
+      <div class="controls">
+        <button class="main-btn" onclick="startGame()">Start Game</button>
+      </div>
+    </div>
+
+    <div id="part1Screen" class="screen">
+      <div class="top-bar">
+        <div class="progress" id="part1Progress"></div>
+        <button class="restart-btn" onclick="startGame()">Restart Game</button>
+      </div>
+      <h2>Part 1: Choose the Correct Answer</h2>
+      <div class="question-box" id="part1Question"></div>
+      <div class="options" id="optionsContainer"></div>
+      <div class="feedback" id="part1Feedback"></div>
+      <div class="small-note">
+        Most wrong options use the same verb with different pronouns.
+      </div>
+    </div>
+
+    <div id="part2Screen" class="screen">
+      <div class="top-bar">
+        <div class="progress" id="part2Progress"></div>
+        <button class="restart-btn" onclick="startGame()">Restart Game</button>
+      </div>
+      <h2>Part 2: Write the Correct Conjugation</h2>
+      <div class="question-box" id="part2Question"></div>
+      <div class="input-row">
+        <input type="text" id="answerInput" placeholder="Type the answer" autocomplete="off" />
+        <button class="main-btn" onclick="checkTypedAnswer()">Check</button>
+      </div>
+      <div class="feedback" id="part2Feedback"></div>
+      <div class="small-note">
+        Tildes are ignored, so they will not count as wrong.
+      </div>
+    </div>
+
+    <div id="endScreen" class="screen">
+      <h2>Great job!</h2>
+      <div class="score-box">
+        <p><strong>You finished both parts.</strong></p>
+        <p id="finalScore"></p>
+        <button class="main-btn" onclick="startGame()">Play Again</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const pronouns = [
+      { key: "yo", label: "yo", index: 0 },
+      { key: "tu", label: "tú", index: 1 },
+      { key: "el", label: "él / ella / usted", index: 2 },
+      { key: "nosotros", label: "nosotros", index: 3 },
+      { key: "vosotros", label: "vosotros", index: 4 },
+      { key: "ellos", label: "ellos / ellas / ustedes", index: 5 }
+    ];
+
+    const verbs = [
+      { infinitive: "hablar", type: "ar", forms: ["hablo","hablas","habla","hablamos","habláis","hablan"] },
+      { infinitive: "estudiar", type: "ar", forms: ["estudio","estudias","estudia","estudiamos","estudiáis","estudian"] },
+      { infinitive: "trabajar", type: "ar", forms: ["trabajo","trabajas","trabaja","trabajamos","trabajáis","trabajan"] },
+      { infinitive: "comprar", type: "ar", forms: ["compro","compras","compra","compramos","compráis","compran"] },
+      { infinitive: "cantar", type: "ar", forms: ["canto","cantas","canta","cantamos","cantáis","cantan"] },
+      { infinitive: "bailar", type: "ar", forms: ["bailo","bailas","baila","bailamos","bailáis","bailan"] },
+      { infinitive: "escuchar", type: "ar", forms: ["escucho","escuchas","escucha","escuchamos","escucháis","escuchan"] },
+      { infinitive: "mirar", type: "ar", forms: ["miro","miras","mira","miramos","miráis","miran"] },
+      { infinitive: "caminar", type: "ar", forms: ["camino","caminas","camina","caminamos","camináis","caminan"] },
+      { infinitive: "cocinar", type: "ar", forms: ["cocino","cocinas","cocina","cocinamos","cocináis","cocinan"] },
+
+      { infinitive: "comer", type: "er", forms: ["como","comes","come","comemos","coméis","comen"] },
+      { infinitive: "beber", type: "er", forms: ["bebo","bebes","bebe","bebemos","bebéis","beben"] },
+      { infinitive: "leer", type: "er", forms: ["leo","lees","lee","leemos","leéis","leen"] },
+      { infinitive: "correr", type: "er", forms: ["corro","corres","corre","corremos","corréis","corren"] },
+      { infinitive: "aprender", type: "er", forms: ["aprendo","aprendes","aprende","aprendemos","aprendéis","aprenden"] },
+      { infinitive: "vender", type: "er", forms: ["vendo","vendes","vende","vendemos","vendéis","venden"] },
+
+      { infinitive: "vivir", type: "ir", forms: ["vivo","vives","vive","vivimos","vivís","viven"] },
+      { infinitive: "escribir", type: "ir", forms: ["escribo","escribes","escribe","escribimos","escribís","escriben"] },
+      { infinitive: "abrir", type: "ir", forms: ["abro","abres","abre","abrimos","abrís","abren"] },
+      { infinitive: "recibir", type: "ir", forms: ["recibo","recibes","recibe","recibimos","recibís","reciben"] },
+      { infinitive: "decidir", type: "ir", forms: ["decido","decides","decide","decidimos","decidís","deciden"] },
+      { infinitive: "compartir", type: "ir", forms: ["comparto","compartes","comparte","compartimos","compartís","comparten"] },
+      { infinitive: "subir", type: "ir", forms: ["subo","subes","sube","subimos","subís","suben"] }
+    ];
+
+    let part1Questions = [];
+    let part2Questions = [];
+    let currentPart1 = 0;
+    let currentPart2 = 0;
+    let attemptsPart1 = 0;
+    let attemptsPart2 = 0;
+
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function normalizeText(text) {
+      return text
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim();
+    }
+
+    function hideAllScreens() {
+      document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.remove("active");
+      });
+    }
+
+    function generateRandomQuestions(total) {
+      const allQuestions = [];
+
+      verbs.forEach(verb => {
+        pronouns.forEach(pronoun => {
+          allQuestions.push({
+            verb: verb.infinitive,
+            pronounLabel: pronoun.label,
+            pronounIndex: pronoun.index,
+            answer: verb.forms[pronoun.index],
+            forms: verb.forms
+          });
+        });
+      });
+
+      return shuffle(allQuestions).slice(0, total);
+    }
+
+    function getWrongOptions(question) {
+      const sameVerbWrongForms = question.forms.filter(form => form !== question.answer);
+
+      let wrongChoices = shuffle(sameVerbWrongForms).slice(0, 3);
+
+      if (wrongChoices.length < 3) {
+        const extraPool = shuffle(
+          verbs
+            .flatMap(v => v.forms)
+            .filter(f => f !== question.answer && !wrongChoices.includes(f))
+        );
+
+        while (wrongChoices.length < 3 && extraPool.length > 0) {
+          wrongChoices.push(extraPool.shift());
+        }
+      }
+
+      return shuffle([question.answer, ...wrongChoices]);
+    }
+
+    function startGame() {
+      part1Questions = generateRandomQuestions(20);
+      part2Questions = generateRandomQuestions(20);
+      currentPart1 = 0;
+      currentPart2 = 0;
+      attemptsPart1 = 0;
+      attemptsPart2 = 0;
+
+      document.getElementById("part1Feedback").textContent = "";
+      document.getElementById("part2Feedback").textContent = "";
+      document.getElementById("answerInput").value = "";
+
+      hideAllScreens();
+      document.getElementById("part1Screen").classList.add("active");
+      showPart1Question();
+    }
+
+    function showPart1Question() {
+      const q = part1Questions[currentPart1];
+      document.getElementById("part1Progress").textContent = `Question ${currentPart1 + 1} of 20`;
+      document.getElementById("part1Question").textContent = `(${q.pronounLabel}) ${q.verb}`;
+      document.getElementById("part1Feedback").textContent = "";
+      document.getElementById("part1Feedback").className = "feedback";
+
+      const optionsContainer = document.getElementById("optionsContainer");
+      optionsContainer.innerHTML = "";
+
+      const options = getWrongOptions(q);
+      options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.textContent = option;
+        btn.onclick = () => checkOption(option);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function checkOption(selected) {
+      const q = part1Questions[currentPart1];
+      attemptsPart1++;
+
+      if (selected === q.answer) {
+        const feedback = document.getElementById("part1Feedback");
+        feedback.textContent = "Correct!";
+        feedback.className = "feedback correct";
+
+        setTimeout(() => {
+          currentPart1++;
+          if (currentPart1 < part1Questions.length) {
+            showPart1Question();
+          } else {
+            startPart2();
+          }
+        }, 700);
+      } else {
+        const feedback = document.getElementById("part1Feedback");
+        feedback.textContent = "Try again.";
+        feedback.className = "feedback wrong";
+      }
+    }
+
+    function startPart2() {
+      hideAllScreens();
+      document.getElementById("part2Screen").classList.add("active");
+      document.getElementById("answerInput").value = "";
+      showPart2Question();
+    }
+
+    function showPart2Question() {
+      const q = part2Questions[currentPart2];
+      document.getElementById("part2Progress").textContent = `Question ${currentPart2 + 1} of 20`;
+      document.getElementById("part2Question").textContent = `(${q.pronounLabel}) ${q.verb}`;
+      document.getElementById("part2Feedback").textContent = "";
+      document.getElementById("part2Feedback").className = "feedback";
+      document.getElementById("answerInput").value = "";
+      document.getElementById("answerInput").focus();
+    }
+
+    function checkTypedAnswer() {
+      const q = part2Questions[currentPart2];
+      const input = document.getElementById("answerInput").value;
+      const feedback = document.getElementById("part2Feedback");
+
+      attemptsPart2++;
+
+      if (normalizeText(input) === normalizeText(q.answer)) {
+        feedback.textContent = "Correct!";
+        feedback.className = "feedback correct";
+
+        setTimeout(() => {
+          currentPart2++;
+          if (currentPart2 < part2Questions.length) {
+            showPart2Question();
+          } else {
+            endGame();
+          }
+        }, 700);
+      } else {
+        feedback.textContent = "Try again.";
+        feedback.className = "feedback wrong";
+        document.getElementById("answerInput").focus();
+      }
+    }
+
+    function endGame() {
+      hideAllScreens();
+      document.getElementById("endScreen").classList.add("active");
+      document.getElementById("finalScore").innerHTML =
+        `Part 1 total tries: <strong>${attemptsPart1}</strong><br>` +
+        `Part 2 total tries: <strong>${attemptsPart2}</strong><br>` +
+        `Questions are shuffled every time you restart.`;
+    }
+
+    document.addEventListener("keydown", function(e) {
+      const part2Active = document.getElementById("part2Screen").classList.contains("active");
+      if (part2Active && e.key === "Enter") {
+        checkTypedAnswer();
+      }
+    });
+  </script>
+</body>
+</html>
